@@ -106,6 +106,12 @@ resource "azurerm_public_ip" "catapp-pip" {
   domain_name_label   = "${var.prefix}-meow"
 }
 
+module "azure-backup" {
+  source  = "ravensorb/azure-backup/azurerm"
+  version = "1.0.2"
+  resource_group_name = "${var.prefix}-public"
+}
+
 resource "azurerm_linux_virtual_machine" "catapp" {
   name                            = "${var.prefix}-meow"
   location                        = azurerm_resource_group.myresourcegroup.location
@@ -130,7 +136,11 @@ resource "azurerm_linux_virtual_machine" "catapp" {
 
   }
 
-  tags = {}
+  tags = {
+    Name        = "${var.prefix}-hashicat-instance"
+    Environment = "prod"
+    Department  = "Hashicat Social"
+  }
 
   # Added to allow destroy to work correctly.
   depends_on = [azurerm_network_interface_security_group_association.catapp-nic-sg-ass]
